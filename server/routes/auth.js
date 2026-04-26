@@ -3,14 +3,16 @@ const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 // const User = require('../models/User');
 const bcrypt = require('bcryptjs');
-const User = require('../models/User');
+const user = require('../models/User');
+// const User = require('../models/User');
+
 // const User = require('../models/User');
 
 
 
 router.post('/register', async (req, res) => {
   try {
-    const user = await User.create(req.body);
+    const user = await user.create(req.body);
     res.json({ token: sign(user._id), user: { id: user._id, name: user.name } });
   } catch (e) { res.status(400).json({ error: e.message }); }
 });
@@ -28,7 +30,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const user = await User.findOne({ email });
+    const user = await user.findOne({ email });
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
