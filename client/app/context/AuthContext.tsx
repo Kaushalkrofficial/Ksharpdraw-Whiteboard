@@ -51,6 +51,7 @@ import {  usePathname, useRouter } from 'next/navigation';
 const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 axios.defaults.withCredentials = true;
 
+
 const AuthCtx = createContext<any>({
   user: null,
   isGuest: true,
