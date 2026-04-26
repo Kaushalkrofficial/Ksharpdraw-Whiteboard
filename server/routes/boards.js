@@ -2,7 +2,7 @@
 const router = require('express').Router();
 const cookieParser = require('cookie-parser');
 const auth = require('../middleware/auth');
-const Board = require('../models/Board');
+const Board = require('../models/board');
 const { default: mongoose } = require('mongoose');
 // const board = require('../models/Board');
 
