@@ -10,24 +10,33 @@ require('dotenv').config();
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: process.env.CLIENT_URL, methods: ['GET','POST'] }
+  cors: { origin: process.env.CLIENT_URL, methods: ['GET', 'POST'] }
 });
 
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
-try {
-  
- const res= mongoose.connect(process.env.MONGO_URI)
- res.status(200).send("MongoDB connected")
-  //  console.log('MongoDB connected');
-} catch (error) {
- res.status(500).send("Mongo db not connected"); 
+// try {
+
+//  const res= mongoose.connect(process.env.MONGO_URI)
+//  res.status(200).send("MongoDB connected")
+//   //  console.log('MongoDB connected');
+// } catch (error) {
+//  res.status(500).send("Mongo db not connected"); 
+// }
+
+const mongo = async () => {
+  await mongoose.connect(process.env.MONGO_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+    .then(() => console.log('Connected to MongoDB'))
+    .catch((error) => console.log('MongoDB Connection Error', error));
 }
+mongo();
 
-
-app.get('/',(req,res)=>{
-  res.status(200).send({message:"Server running.."})
+app.get('/', (req, res) => {
+  res.status(200).send({ message: "Server running.." })
 })
 
 app.use('/api/auth', require('./routes/auth'));
