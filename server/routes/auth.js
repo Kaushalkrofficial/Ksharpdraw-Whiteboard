@@ -12,7 +12,7 @@ const user = require('../models/User');
 
 router.post('/register', async (req, res) => {
   try {
-    const user = await user.create(req.body);
+    const user = await User.create(req.body);
     res.json({ token: sign(user._id), user: { id: user._id, name: user.name } });
   } catch (e) { 
     res.status(400).json({ error: e.message }); 
@@ -32,7 +32,7 @@ router.post('/login', async (req, res) => {
       });
     }
 
-    const user = await user.findOne({ email });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });

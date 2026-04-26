@@ -16,14 +16,6 @@ const io = new Server(server, {
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
-// try {
-
-//  const res= mongoose.connect(process.env.MONGO_URI)
-//  res.status(200).send("MongoDB connected")
-//   //  console.log('MongoDB connected');
-// } catch (error) {
-//  res.status(500).send("Mongo db not connected"); 
-// }
 
 const mongo = async () => {
   await mongoose.connect(process.env.MONGO_URI, {
