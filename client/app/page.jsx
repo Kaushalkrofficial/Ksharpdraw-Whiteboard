@@ -288,10 +288,10 @@ export default function BoardsPage() {
                 </p>
                 <Button onClick={() => handleDelete(b._id || b.guestId)}
                   disabled={deletingId === (b._id || b.guestId)}
-                  className="hover:bg-gray-300 cursor-pointer">
+                  className="hover:bg-gray-400 bg-gray-200 font-bold cursor-pointer">
                   {deletingId === (b._id || b.guestId)
                     ? <span className="text-xs">Deleting...</span>
-                    : <Trash2Icon className="w-4 h-4 text-red-500" />}
+                    : <Trash2Icon className="w-4 h-4 font-bold text-red-500" />}
                 </Button>
               </div>
             </div>

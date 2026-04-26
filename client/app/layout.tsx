@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Ksarpdraw Whiteboard",
+  title: "Ksharpdraw Whiteboard",
   description: "whiteboad ",
 };
 
