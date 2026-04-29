@@ -7,6 +7,7 @@ const { default: mongoose } = require('mongoose');
 // const board = require('../models/Board');
 
 
+// -----Find all board related to owner--------
 router.get('/', auth, async (req, res) => {
   try {
     const token = req.cookies.token;
@@ -20,7 +21,7 @@ router.get('/', auth, async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
-
+// ------Join ussing token --------
 router.get('/join/:token', auth, async (req, res) => {
   const board = await Board.findOne({ inviteToken: req.params.token });
   if (!board) return res.status(404).json({ error: 'Invalid link' });
@@ -30,6 +31,8 @@ router.get('/join/:token', auth, async (req, res) => {
   res.json({ boardId: board._id });
 });
 
+
+// -------Share URL to join -----------
 router.post('/:id/invite', auth, async (req, res) => {
   try {
     // const token = crypto.randomBytes(12).toString('hex');
@@ -60,7 +63,7 @@ router.post('/:id/invite', auth, async (req, res) => {
   }
 });
 
-// ---
+// --- Create board ------
 router.post('/', auth, async (req, res) => {
   const board = await Board.create(
     { ...req.body, owner: req.user._id },
@@ -68,6 +71,8 @@ router.post('/', auth, async (req, res) => {
   res.json(board);
 });
 
+
+// ------FInd by Id -------
 router.get('/:id', auth, async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ error: 'not found' });
@@ -76,6 +81,7 @@ router.get('/:id', auth, async (req, res) => {
   res.json(board);
 });
 
+// ---------Find by ID and Update ----------
 router.put('/:id', auth, async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
     return res.status(400).json({ error: 'not found' });
@@ -84,7 +90,8 @@ router.put('/:id', auth, async (req, res) => {
   res.json(board);
 });
 
-router.delete('/:id', auth, async (req, res) => {
+// --------FInd by ID ans delete -----------
+ router.delete('/:id', auth, async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
   return res.status(400).json({ error: 'Invalid Board ID' });
 }
