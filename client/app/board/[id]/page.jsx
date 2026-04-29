@@ -60,11 +60,11 @@ const loadCanvasHybrid = async (canvas, boardId) => {
 };
 
 export default function BoardPage() {
-    const { token, user,logout } = useAuth();
+    const { token, user, logout } = useAuth();
     const params = useParams();
-    const router=useRouter();
+    const router = useRouter();
     const { theme, setTheme } = useTheme();
-    
+
 
     const boardId = params?.id;
 
@@ -217,16 +217,16 @@ export default function BoardPage() {
         <div className="relative w-full h-screen" onMouseMove={handleMouseMove}>
 
             {/* Toolbar */}
-            <div 
-             onClick={()=> router.push('/')}
-             className="absolute top-0 left-0 right-0 h-14 flex items-center px-4 gap-3 z-10 bg-gray-200 dark:bg-gray-700">
+            <div
+
+                className="absolute top-0 left-0 right-0 h-14 flex items-center px-4 gap-3 z-10 bg-gray-200 dark:bg-gray-700">
                 {/* <span className="font-medium text-sm dark:text-white">Board</span> */}
-                 <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center bg-blue-800 text-white rounded-lg ">
-                    <PanelsTopLeft className="h-4 w-4" />
+                <div onClick={() => router.push('/')} className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center bg-blue-800 text-white rounded-lg ">
+                        <PanelsTopLeft className="h-4 w-4" />
+                    </div>
+                    <h2 className="font-semibold text-lg">Whiteboard</h2>
                 </div>
-                <h2 className="font-semibold text-lg">Whiteboard</h2>
-            </div>
 
                 <div className="ml-auto flex gap-2">
 
@@ -262,12 +262,14 @@ export default function BoardPage() {
                                 <Moon className="text-blue-500 w-5 h-5" />}
                         </button>
 
-                        <button 
-                         onClick={()=>  logout()}
-                        className="flex items-center gap-2 dark:text-white">
-                            <LogOut className="w-4 h-4" />
-                            <span>Sign out</span>
-                        </button>
+                        {
+                            user && <button
+                                onClick={() => logout()}
+                                className="flex items-center gap-2 dark:text-white">
+                                <LogOut className="w-4 h-4" />
+                                <span>Sign out</span>
+                            </button>
+                        }
                     </div>
 
                     {inviteLink && (
