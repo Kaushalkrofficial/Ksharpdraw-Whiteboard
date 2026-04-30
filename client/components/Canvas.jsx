@@ -3,9 +3,10 @@
 import { useEffect, useRef, useState } from 'react';
 import * as fabric from 'fabric';
 import { io } from 'socket.io-client';
-import { ArrowLeft, ChevronLeft, Circle, Eraser, MousePointer2, Paintbrush, Palette, Pencil, Settings, Square, Trash2, Type } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, Circle, Eraser, Minus, MousePointer2, Paintbrush, Palette, Pencil, Plus, Settings, Square, Trash2, Type } from 'lucide-react';
 import { ScrollArea } from './ui/scroll-area';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './ui/tabs';
+import { Button } from './ui/button';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
 
@@ -21,6 +22,8 @@ export default function Canvas({ boardId, onCanvasReady }) {
   const [color, setColor] = useState('#1a1a1a');
   const [bgcolor, setBgColor] = useState('#ffffff');
   const [size, setSize] = useState(3);
+  const [Brushsize, setBrushSize] = useState(3);
+  const [TextSize, setTextSize] = useState(18);
 
 
 
@@ -34,7 +37,7 @@ export default function Canvas({ boardId, onCanvasReady }) {
     { "name": "Black", "hex": "#000000", "rgb": "rgb(0, 0, 0)" },
     { "name": "White", "hex": "#FFFFFF", "rgb": "rgb(255, 255, 255)" },
     { "name": "Navy", "hex": "#000080", "rgb": "rgb(0, 0, 128)" },
-  { "name": "Maroon", "hex": "#800800", "rgb": "rgb(128, 0, 0)" },
+    { "name": "Maroon", "hex": "#800800", "rgb": "rgb(128, 0, 0)" },
 
   ]
 
@@ -97,7 +100,7 @@ export default function Canvas({ boardId, onCanvasReady }) {
 
       const brush = new fabric.PencilBrush(fc);
       brush.color = bgcolor; // dynamic erase
-      brush.width = size * 3;
+      brush.width = Brushsize * 2;
 
       fc.freeDrawingBrush = brush;
       fc.selection = false;
@@ -108,7 +111,7 @@ export default function Canvas({ boardId, onCanvasReady }) {
     }
 
 
-  }, [tool, color, size, bgcolor, fc]);
+  }, [tool, color, size, bgcolor, fc, Brushsize, TextSize]);
 
   //  REAL-TIME SYNC (FIXED)
   useEffect(() => {
@@ -174,7 +177,7 @@ export default function Canvas({ boardId, onCanvasReady }) {
       obj = new fabric.IText('Edit me', {
         left: 200,
         top: 200,
-        fontSize: 18,
+        fontSize: TextSize,
         fill: color,
         fontFamily: 'Patrick Hand',
         textAlign: 'center',
@@ -233,10 +236,14 @@ export default function Canvas({ boardId, onCanvasReady }) {
   ];
 
   const handleItemClick = (id) => {
-    // setTool(id);
-    // if (id === activeSidebar && isPanelCollapsed) return;
-    setActiveSidebar(id);
-    setIsPanelCollaspsed(!isPanelCollapsed);
+
+    if (activeSidebar === id) {
+      setIsPanelCollaspsed(prev => !prev);
+    } else {
+      setActiveSidebar(id);
+      setIsPanelCollaspsed(false);
+    }
+
   }
   // const activeItem=  tools|| sidebarItems?.find(item => item.id === activeSidebar);
 
@@ -313,7 +320,7 @@ export default function Canvas({ boardId, onCanvasReady }) {
 
           <Settings
             className={`cursor-pointer w-8 h-8`}
-            onClick={()=>handleItemClick('setting')}
+            onClick={() => handleItemClick('setting')}
           />
 
           <input
@@ -363,15 +370,15 @@ export default function Canvas({ boardId, onCanvasReady }) {
                 <Paintbrush className='mr-2 h-4 w-4' />
                 Brush
               </TabsTrigger>
-              <TabsTrigger value='tools'>
-                <Palette className='mr-2 h-4 w-4' />
-                Tools
+              <TabsTrigger value='text'>
+                <Type className='mr-2 h-4 w-4' />
+                Fonts
               </TabsTrigger>
 
             </TabsList>
             <TabsContent value='color'>
 
-               {/* ---------Background color setting------- */}
+              {/* ---------Background color setting------- */}
               <div className='space-y-3 p-1'>
                 <div className='flex items-center justify-between'>
                   <label>Color Palette</label>
@@ -389,14 +396,14 @@ export default function Canvas({ boardId, onCanvasReady }) {
                 </div>
                 <div className='grid grid-cols-5 gap-2'>
                   {
-                    colorPresets.map(color => (
-                      <div key={color.hex}>
+                    colorPresets.map(c => (
+                      <div key={c.hex}>
                         <button
-                          onClick={() => setBgColor(color.hex)}
+                          onClick={() => setBgColor(c.hex)}
                           className={`w-10 h-10 rounded-full cursor-pointer
-                             border border-gray-500 transition-transform  hover:scale-110 ${color.hex === color ? 'ring-1 ring-offset-2 ring-primary' : ''
+                             border border-gray-500 transition-transform  hover:scale-110 ${c.hex === bgcolor ? 'ring-1 ring-offset-2 ring-primary' : ''
                             }`}
-                          style={{ backgroundColor: color.hex }} />
+                          style={{ backgroundColor: c.hex }} />
 
 
                       </div>
@@ -405,8 +412,8 @@ export default function Canvas({ boardId, onCanvasReady }) {
                 </div>
 
               </div>
-              <hr className=' '/>
-{/* -----------Stroke colors setting------------ */}
+              <hr className=' ' />
+              {/* -----------Stroke colors setting------------ */}
               <div className='space-y-3 p-1'>
                 <div className='flex items-center justify-between'>
                   <label>Color Palette</label>
@@ -420,23 +427,87 @@ export default function Canvas({ boardId, onCanvasReady }) {
                 </div>
                 <div className='grid grid-cols-5 gap-2'>
                   {
-                    colorPresets.map(color => (
-                      <div key={color.hex}>
+                    colorPresets.map(c => (
+                      <div key={c.hex}>
                         <button
-                          onClick={() => setColor(color.hex)}
+                          onClick={() => setColor(c.hex)}
                           className={`w-10 h-10 rounded-full cursor-pointer
-                             border border-gray-500 transition-transform  hover:scale-110 ${color.hex === color ? 'ring-1 ring-offset-2 ring-primary' : ''
+                             border border-gray-500 transition-transform  hover:scale-110 ${c.hex === color ? 'ring-1 ring-offset-2 ring-primary' : ''
                             }`}
-                          style={{ backgroundColor: color.hex }} />
+                          style={{ backgroundColor: c.hex }} />
 
 
                       </div>
                     ))
                   }
                 </div>
+                <div className='w-full flex-col justify-between'>
+                  <label className="text-xs w-full font-semibold">Pen Size: {size}</label>
+                  <div className='flex '>
+                    <Minus /> <input
+                      type="range"
+                      min={1}
+                      max={30}
+                      step={1}
+                      value={size}
+                      className={`w-full`}
+                      onChange={(e) => setSize(Number(e.target.value))}
+                    /> <Plus />
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value='brush'>
+              <div className='w-full p-2'>
+                <div className='w-full'>
+                  <div className='flex '>
+                    <Minus /> <input
+                      type="range"
+                      min={1}
+                      max={30}
+                      step={1}
+                      value={Brushsize}
+                      className={`w-full`}
+                      onChange={(e) => setBrushSize(Number(e.target.value))}
+                    /> <Plus />
+                  </div>
 
-
-
+                  <div className="grid grid-cols-3 gap-1">
+                    {brushSizes.map((size) => (
+                      <Button
+                        key={size.value}
+                        variant={
+                          size.value === Brushsize ? "default" : "outline"
+                        }
+                        className={"px-3 py-1 h-auto"}
+                        onClick={() => setBrushSize(size.value)}
+                      >
+                        {size.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </TabsContent>
+            <TabsContent value='text'>
+              <div className='p-2'>
+                <div className="space-y-4">
+                  {textPresets.map((preset, index) => (
+                    <Button
+                      className="w-full text-left p-3 dark:bg-white border border-gray-200 rounded-md hover:bg-gray-700 transition-colors"
+                      key={index}
+                      onClick={() => setTextSize(preset.fontSize)}
+                      style={{
+                        fontSize: `${Math.min(preset.fontSize / 1.8, 24)}px`,
+                        fontWeight: preset.fontWeight,
+                        fontStyle: preset.fontStyle || "normal",
+                        fontFamily: preset.fontFamily,
+                      }}
+                    >
+                      {preset.text}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </TabsContent>
           </Tabs>
@@ -444,19 +515,8 @@ export default function Canvas({ boardId, onCanvasReady }) {
           <div className='h-full overflow-y-auto'>
             {/* activeItem?.panel() */}
             <div className="flex flex-col gap-5 p-3">
-          
-              <div className='w-full flex-col justify-between'>
-                <label className="text-xs w-full font-semibold">Pen / Eraser Size: {size}</label>
-                <input
-                  type="range"
-                  min={1}
-                  max={30}
-                  step={1}
-                  value={size}
-                  className={`w-full`}
-                  onChange={(e) => setSize(Number(e.target.value))}
-                />
-              </div>
+
+
             </div>
           </div>
           <button className='collapse-button
@@ -485,3 +545,43 @@ export default function Canvas({ boardId, onCanvasReady }) {
 
   );
 }
+
+export const brushSizes = [
+  { value: 2, label: "Small" },
+  { value: 5, label: "Medium" },
+  { value: 10, label: "Large" },
+  { value: 20, label: "Extra Large" },
+];
+
+
+export const textPresets = [
+  {
+    name: "Heading",
+    text: "Add a heading",
+    fontSize: 36,
+    fontWeight: "bold",
+    fontFamily: "Inter, sans-serid",
+  },
+  {
+    name: "Subheading",
+    text: "Add a subheading",
+    fontSize: 24,
+    fontWeight: "bold",
+    fontFamily: "Inter, sans-serid",
+  },
+  {
+    name: "Body Text",
+    text: "Add a little bit of body text",
+    fontSize: 16,
+    fontWeight: "normal",
+    fontFamily: "Inter, sans-serid",
+  },
+  {
+    name: "Caption",
+    text: "Add a caption",
+    fontSize: 12,
+    fontWeight: "normal",
+    fontFamily: "Inter, sans-serid",
+    fontStyle: "normal",
+  },
+];
