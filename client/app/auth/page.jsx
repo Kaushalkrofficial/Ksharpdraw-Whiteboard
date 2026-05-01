@@ -22,7 +22,7 @@ export default function Page() {
                         onClick={() => handleMode('in')}
                         className={`w-1/2 py-3 text-lg cursor-pointer font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50
                         ${mode === 'in'
-                                ? 'bg-blue-600 text-black'
+                                ? 'bg-blue-600 text-white'
                                 : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                             }`}
                     >
@@ -33,7 +33,7 @@ export default function Page() {
                         onClick={() => handleMode('up')}
                         className={`w-1/2 py-3 text-lg cursor-pointer font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50 
                         ${mode === 'up'
-                                ? 'bg-blue-600 text-black'
+                                ? 'bg-blue-600 text-white'
                                 : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
                             }`}
                     >
