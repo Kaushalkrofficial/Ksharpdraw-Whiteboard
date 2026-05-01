@@ -26,12 +26,21 @@ function RegisterCard() {
                 password,
                 name
             })
-            setUser(res.data);
-
-            toast.info(`Sign up successfully.`);
+            setUser(res.data.user);
+            console.log("Signup  :", res.data)
+            toast.success(`Sign up successfully.`);
         } catch (error) {
-            toast.error(`failed to signup, try again`)
-            console.error("Signup error :",error)
+            const errorData = error.response?.data;
+
+            const message =
+                errorData?.errors?.[0]?.msg || 
+                errorData?.message ||          
+                errorData?.error ||           
+                "Failed to signup, try again";
+
+            toast.error(message);
+
+            console.log("Signup error:", errorData);
         } finally {
             setLoading(false)
         }
@@ -44,7 +53,7 @@ function RegisterCard() {
 
                 </div>
                 <form className="space-y-2" onSubmit={e => handelRegister(e)} >
-                     <input
+                    <input
                         value={name}
                         onChange={e => { setName(e.target.value) }}
                         type="text"
@@ -52,7 +61,7 @@ function RegisterCard() {
                         placeholder="Enter your name..."
                         className="w-full p-4 text-black border-gray-500 border-b-2 rounded-2xl"
                     />
-                     {/* <input
+                    {/* <input
                         value={email}
                         onChange={e => { setEmail(e.target.value) }}
                         type="email"

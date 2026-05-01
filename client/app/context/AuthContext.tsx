@@ -81,13 +81,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   },[isGuest])
 
   const login = async (email: string, password: string) => {
-    const { data } = await axios.post(`${API}/api/auth/login`, { email, password });
-    localStorage.setItem('user', JSON.stringify(data.user));
-    setUser(data.user);
+    const res = await axios.post(`${API}/api/auth/login`, { email, password });
+    localStorage.setItem('user', JSON.stringify(res?.data.user));
+    setUser(res?.data.user);
     setIsGuest(false);
 
     //  Login ke baad — guest ke localStorage canvas data DB mein migrate karo
     await migrateGuestBoards();
+    return res;
   };
 
   const logout = async () => {

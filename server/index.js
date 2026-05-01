@@ -6,6 +6,7 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser')
 require('dotenv').config();
+const helmet = require('helmet');
 
 const app = express();
 const server = http.createServer(app);
@@ -17,6 +18,7 @@ const io = new Server(server, {
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
+app.use(helmet())
 
 const mongo = async () => {
   await mongoose.connect(process.env.MONGO_URI, {

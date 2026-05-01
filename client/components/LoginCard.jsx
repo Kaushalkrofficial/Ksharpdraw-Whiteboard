@@ -53,7 +53,7 @@
 //                         value={email}
 //                         onChange={e => { setEmail(e.target.value) }}
 //                         type="email"
-                        
+
 //                         required
 //                         placeholder="Enter your email..."
 //                         className="w-full p-4 text-black border rounded-2xl"
@@ -110,11 +110,22 @@ function LoginCard() {
         e.preventDefault();
         setLoading(true);
         try {
-            await login(email, password); //  AuthContext se login call karo
-            toast.success('Login successfully!');
+            const res= await login(email, password); //  AuthContext se login call karo
+            toast.success( res.data.message || 'Login successfully!');
+        
             router.push('/');             //  boards page pe redirect
         } catch (error) {
-            toast.error(error.response?.data?.error || 'Failed to login, try again');
+            const errorData = error.response?.data;
+
+            const message =
+                errorData?.errors?.[0]?.msg ||
+                errorData?.message ||
+                errorData?.error ||
+                "Failed to login, try again";
+
+            toast.error(message);
+
+            // console.log("Login error:", error.response);
         } finally {
             setLoading(false);
         }
