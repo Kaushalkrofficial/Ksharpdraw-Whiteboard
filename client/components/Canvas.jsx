@@ -119,24 +119,31 @@ export default function Canvas({ boardId, onCanvasReady }) {
     const socket = socketRef.current;
     if (!socket) return;
 
-
     const handleAdd = (e) => {
-      const obj = e.target;
+      if (e.target.__fromSocket) return;
+
       socket.emit('canvas-update', {
         boardId,
         delta: {
           type: 'add',
-          obj: obj.toJSON(),
+          obj: e.target.toJSON(),
         },
       });
     };
 
     fc.on('object:added', handleAdd);
 
-    socket.on('canvas-update', ({ delta }) => {
-      if (delta.type === 'add') {
+    socket.on('canvas-update', (data) => {
+      if (!data || !data.delta) return;
+
+      const { delta } = data;
+
+      if (delta.type === 'add' && delta.obj) {
         fabric.util.enlivenObjects([delta.obj], (objects) => {
-          objects.forEach((o) => fc.add(o));
+          objects.forEach((o) => {
+            o.__fromSocket = true;
+            fc.add(o);
+          });
           fc.renderAll();
         });
       }
@@ -146,9 +153,7 @@ export default function Canvas({ boardId, onCanvasReady }) {
       fc.off('object:added', handleAdd);
       socket.off('canvas-update');
     };
-
-
-  }, [fc, boardId]);
+  }, [fc]);
 
   //  ADD SHAPES
   const addShape = (type) => {

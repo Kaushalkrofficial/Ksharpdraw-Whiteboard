@@ -27,7 +27,7 @@ const saveLocal = (canvas, boardId) => {
 };
 
 //  Save to DB
-const saveDB = async (canvas, boardId, token) => {
+const saveDB = async (canvas, boardId) => {
     const json = JSON.stringify(canvas.toJSON());
 
     await axios.put(
@@ -60,7 +60,7 @@ const loadCanvasHybrid = async (canvas, boardId) => {
 };
 
 export default function BoardPage() {
-    const { token, user, logout } = useAuth();
+    const { user, logout } = useAuth();
     const params = useParams();
     const router = useRouter();
     const { theme, setTheme } = useTheme();
@@ -235,7 +235,7 @@ export default function BoardPage() {
                         onClick={() => {
                             if (!canvasRef.current) return;
                             saveLocal(canvasRef.current, boardId);
-                            saveDB(canvasRef.current, boardId, token);
+                            saveDB(canvasRef.current, boardId);
                         }}
                         className="px-3 py-1.5 rounded dark:text-gray-100 bg-fuchsia-700">
                         Save

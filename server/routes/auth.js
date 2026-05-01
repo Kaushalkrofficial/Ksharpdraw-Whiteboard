@@ -4,6 +4,9 @@ const jwt = require('jsonwebtoken');
 const { body, validationResult } = require('express-validator')
 const bcrypt = require('bcryptjs');
 const User = require('../models/user');
+const { generateVerificationCode } = require('../utils/generateVerificationCode');
+const { generateEmailTemplate } = require('../utils/emailTemplet');
+const { sendEmail } = require('../utils/sendEmail');
 
 
 
@@ -36,19 +39,96 @@ router.post('/register', body('name')
       if (user) {
         return res.status(400).send({ message: "User already exists with this email." });
       }
-
+      // Generate verification code
+      const { code, expires } = generateVerificationCode();
+      const message = generateEmailTemplate(code);
       user = new User({
         name,
         email,
-        password
+        password,
+        verificationCode: code,
+        verificationCodeExpire: expires,
       });
-      await user.save();
-      res.json({ user: { id: user._id, name: user.name } });
+
+      // Send verification email
+      const emailHtml = message;
+      //  `<p>Your verification code is: <strong>${code}</strong></p><p>It will expire in 10 minutes.</p>`;
+      await sendEmail({
+        email: user.email,
+        subject: "Email Verification Code",
+        html: emailHtml
+      });
+      await user.save(); // Correctly awaiting the save operation
+      res.status(201).send({
+        success: true,
+        message: `Verification email sent to ${user.email}. Please check your inbox.`,
+      });
+      // await user.save();
+      // res.json({ user: { id: user._id, name: user.name } });
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
   });
 
+//---------- Verify OTP ----------
+router.post('/verify-otp',
+  //-------Validate ------
+  [body('email').notEmpty().withMessage("Required fiels.")
+    .isEmail().withMessage("Valid Email is required.")],
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.status(400).json({
+          success: false,
+          errors: errors.array()
+        })
+      }
+      const { email, otp } = req.body;
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        return res.status(400).send({ message: 'Invalid OTP.' });
+      }
+      //-----------Count attempt -------------
+
+      if (user.otpAttempts >= 5) {
+        return res.status(429).send({ message: "Too many attempts" });
+      }
+
+      if (user.verificationCode !== otp) {
+        user.otpAttempts += 1;
+        await user.save();
+        return res.status(400).send({ message: "Invalid OTP." });
+      }
+
+      if (user.verificationCode !== otp) {
+        return res.status(400).send({ message: 'Invalid OTP.' });
+      }
+      if (Date.now() > user.verificationCodeExpire) {
+        return res.status(400).send({ message: 'OTP has expired. Please request a new one.' });
+      }
+
+      user.accountVerified = true;
+      user.verificationCode = undefined;
+      user.verificationCodeExpire = undefined;
+      await user.save();
+
+      // Optionally, log the user in immediately by sending a token
+      // const token = jwt.sign({ id: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: '24h' });
+
+      res.status(200).send({
+        message: "Email verified successfully.",
+        // token,
+        user: { id: user._id, name: user.name, email: user.email }
+      });
+
+    } catch (error) {
+      console.error(error);
+      res.status(500).send({ message: 'Internal Server Error' });
+    }
+  }
+)
 
 
 router.post('/login', body('email').isEmail().withMessage('Valid email is required.')
@@ -74,10 +154,13 @@ router.post('/login', body('email').isEmail().withMessage('Valid email is requir
       //   });
       // }
 
-      const user = await User.findOne({ email });
+      const user = await User.findOne({ email }).select(`+password`);
 
       if (!user) {
         return res.status(401).json({ error: 'Invalid credentials' });
+      }
+      if (!user.accountVerified) {
+        return res.status(403).send({ message: "Account not verified. Please check your email for the OTP." });
       }
 
       // const isMatch = await bcrypt.compare(password, user.password);
@@ -112,7 +195,7 @@ router.post('/login', body('email').isEmail().withMessage('Valid email is requir
       //   message: "Error in server.",
       //   status: false
       // });
-       res.status(500).json({ error: e.message });
+      res.status(500).json({ error: e.message });
     }
   });
 

@@ -11,7 +11,7 @@ function Navbar() {
         <div className="flex justify-between bg-gray-200 text-gray-800 dark:bg-gray-800  dark:text-white p-4">
             <div className="flex items-center gap-2" onClick={()=> router.push('/')}>
                 <div className="flex h-8 w-8 items-center justify-center bg-blue-800 text-white rounded-lg ">
-                    <PanelsTopLeft className="h-4 w-4" />
+                    <PanelsTopLeft className="h-4 w-4"  />
                 </div>
                 <h2 className="font-semibold text-lg">Whiteboard</h2>
             </div>

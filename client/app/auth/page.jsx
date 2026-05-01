@@ -2,42 +2,52 @@
 import { useState } from "react";
 import LoginCard from "../../components/LoginCard";
 import RegisterCard from "../../components/RegisterCard";
+import { PanelsTopLeft } from "lucide-react";
 
-
-
-export default function page() {
+export default function Page() {
     const [mode, setMode] = useState("in");
 
     const handleMode = (e) => {
-        if (mode == e) {
-            return
-        }
-        else {
-            return setMode(e)
-        }
-    }
+        if (mode !== e) setMode(e);
+    };
+
     return (
-        <div className="min-h-screen flex justify-center items-center z-10 ">
-            <div className="flex flex-col h-auto">
-                <div className="bg-gray-400 flex  rounded-t-lg shadow-xl h-12 w-full max-w-md mx-4 transition-all duration-300 text-2xl ">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 px-4">
+
+            <div className="w-full max-w-md">
+
+                {/* Tabs */}
+                <div className="flex rounded-t-2xl overflow-hidden shadow-lg">
                     <button
-                        className={`w-1/2  ${mode == 'in' && `bg-amber-400 text-black`} rounded-tl-lg font-bold  cursor-pointer`}
-                        onClick={() => handleMode('in')}>
+                        onClick={() => handleMode('in')}
+                        className={`w-1/2 py-3 text-lg cursor-pointer font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50
+                        ${mode === 'in'
+                                ? 'bg-blue-600 text-black'
+                                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                            }`}
+                    >
                         Login
                     </button>
+                   
                     <button
-                        className={`w-1/2  ${mode == 'up' && `bg-amber-400 text-black`} rounded-tr-lg font-bold  cursor-pointer text-2xl`}
-                        onClick={() => handleMode('up')}>
+                        onClick={() => handleMode('up')}
+                        className={`w-1/2 py-3 text-lg cursor-pointer font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50 
+                        ${mode === 'up'
+                                ? 'bg-blue-600 text-black'
+                                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                            }`}
+                    >
                         Signup
                     </button>
                 </div>
-
-                <div>
-                    {mode == 'in' && <LoginCard />}
-                    {mode == 'up' && <RegisterCard />}
+                             
+                {/* Card Content */}
+                <div className="bg-white shadow-xl rounded-b-2xl p-6 transition-all duration-300">
+                    {mode === 'in' && <LoginCard />}
+                    {mode === 'up' && <RegisterCard />}
                 </div>
-            </div>
 
+            </div>
         </div>
-    )
+    );
 }
