@@ -135,7 +135,7 @@ function LoginCard() {
         <div className="rounded-b-2xl  p-1 w-full max-w-md ">
             <div className="space-y-4">
 
-                <div className="text-center flex gap-2 items-center justify-center">
+                <div  className="text-center flex gap-2 items-center justify-center">
                     <div className="flex h-8 w-8 items-center justify-center   bg-blue-800 text-white rounded-lg ">
                         <PanelsTopLeft className="h-4 w-4" />
                     </div>

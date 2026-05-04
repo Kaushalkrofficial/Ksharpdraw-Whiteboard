@@ -3,6 +3,7 @@ import { useState } from "react";
 import LoginCard from "../../components/LoginCard";
 import RegisterCard from "../../components/RegisterCard";
 import { PanelsTopLeft } from "lucide-react";
+import ForgotPasswordCard from "../../components/ForgotPassword";
 
 export default function Page() {
     const [mode, setMode] = useState("in");
@@ -28,7 +29,7 @@ export default function Page() {
                     >
                         Login
                     </button>
-                   
+
                     <button
                         onClick={() => handleMode('up')}
                         className={`w-1/2 py-3 text-lg cursor-pointer font-medium hover:bg-blue-700 transition duration-200 disabled:opacity-50 
@@ -39,13 +40,20 @@ export default function Page() {
                     >
                         Signup
                     </button>
+
                 </div>
-                             
+
                 {/* Card Content */}
                 <div className="bg-white shadow-xl rounded-b-2xl p-6 transition-all duration-300">
                     {mode === 'in' && <LoginCard />}
                     {mode === 'up' && <RegisterCard />}
+                    {mode === 'forgot' && <ForgotPasswordCard />}
+                  {  mode == 'in' &&  (<button 
+                        onClick={() => handleMode('forgot')}
+                        className=" font-semibold p-2 mt-3  rounded bg-blue-600 cursor-pointer ">
+                            Forgot password</button>)}
                 </div>
+
 
             </div>
         </div>

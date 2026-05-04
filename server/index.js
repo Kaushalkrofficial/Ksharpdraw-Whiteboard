@@ -7,7 +7,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser')
 require('dotenv').config();
 const helmet = require('helmet');
-
+const removeUnverifiedAccount = require('./Automation/unverifiedaccounts')
 const app = express();
 const server = http.createServer(app);
 // app.use(cors());
@@ -29,7 +29,7 @@ const mongo = async () => {
     .catch((error) => console.log('MongoDB Connection Error', error));
 }
 mongo();
-
+removeUnverifiedAccount();
 app.get('/', (req, res) => {
   res.status(200).send({ message: "Server running.." })
 })

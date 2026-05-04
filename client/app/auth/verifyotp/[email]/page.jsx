@@ -17,7 +17,7 @@ function OtpVerification() {
     async function handleOtpSubmit(e) {
         e.preventDefault();
         try {
-            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth//verify-otp`, {
+            const res = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/auth/verify-otp`, {
                 email: decodeURIComponent(email),
                 otp,
             });
